@@ -1,116 +1,129 @@
 :root {
-    --bg-color: #0f172a;        /* 背景色（濃い紺） */
-    --timeline-bg: #1e293b;    /* タイムラインのベース */
-    --task-bg: #1e293b;        /* タスクの背景色（背景より少し明るい） */
-    --accent-purple: #8b5cf6;  /* 紫のアクセント */
-    --text-main: #f8fafc;
-    --text-sub: #94a3b8;
-    --border-color: #334155;
-    --hour-height: 100px;      /* 1時間の高さ */
+    --bg-color: #0b0e14;
+    --sidebar-bg: #161b22;
+    --lane-bg: rgba(255, 255, 255, 0.02);
+    --border-color: #30363d;
+    --text-color: #c9d1d9;
+    --hour-height: 120px; /* 1時間の高さ */
+    --life-color: #3fb950; /* 生活：緑 */
+    --study-color: #a371f7; /* 勉強：紫 */
 }
 
 body {
     background-color: var(--bg-color);
-    color: var(--text-main);
-    font-family: sans-serif;
+    color: var(--text-color);
     margin: 0;
-    display: flex;
-    justify-content: center;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
 }
 
-.container {
-    width: 100%;
-    max-width: 600px;
+.app-container { display: flex; height: 100vh; }
+
+/* 入力エリア */
+.input-panel {
+    width: 260px;
+    background: var(--sidebar-bg);
     padding: 20px;
-}
-
-/* 入力フォームのスタイル */
-#task-form {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    margin-bottom: 30px;
-    background: #1e293b;
-    padding: 15px;
-    border-radius: 8px;
-}
-
-input {
-    background: #0f172a;
-    border: 1px solid var(--border-color);
-    color: white;
-    padding: 8px;
-    border-radius: 4px;
-}
-
-/* タイムライン構造 */
-.timeline-container {
-    display: flex;
-    position: relative;
-    border-top: 1px solid var(--border-color);
-}
-
-.date-label {
-    width: 50px;
-    padding-top: 20px;
-    font-weight: bold;
-    text-align: center;
     border-right: 1px solid var(--border-color);
 }
 
-.timeline-grid {
+#task-form { display: flex; flex-direction: column; gap: 15px; }
+input, select {
+    background: #0d1117;
+    border: 1px solid var(--border-color);
+    color: white;
+    padding: 10px;
+    border-radius: 6px;
+}
+button {
+    background: #238636;
+    color: white;
+    border: none;
+    padding: 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+/* タイムライン */
+.timeline-view {
     flex-grow: 1;
+    display: flex;
+    overflow-y: auto;
+    padding: 20px;
+}
+
+.date-column {
+    width: 60px;
+    text-align: center;
+    border-right: 1px solid var(--border-color);
+    padding-top: 40px;
+}
+
+.main-timeline {
     position: relative;
-    height: calc(var(--hour-height) * 24); /* 24時間分 */
+    display: flex;
+    flex-grow: 1;
 }
 
-/* 時間の目盛り */
-.time-mark {
+/* 時間軸 */
+.hour-axis {
+    width: 50px;
+    position: relative;
+}
+.hour-label {
     height: var(--hour-height);
-    border-bottom: 1px solid #1e293b;
-    font-size: 0.8rem;
-    color: var(--text-sub);
-    padding-left: 10px;
-    box-sizing: border-box;
+    font-size: 12px;
+    color: #8b949e;
+    text-align: right;
+    padding-right: 10px;
 }
 
-/* タスクの配置 */
-.task-layer {
+/* レーン設定 */
+.lanes-container {
+    display: flex;
+    flex-grow: 1;
+}
+
+.lane {
+    flex: 1;
+    border-right: 1px solid var(--border-color);
+    position: relative;
+    background: var(--lane-bg);
+}
+
+.lane-label {
+    position: sticky;
+    top: 0;
+    text-align: center;
+    padding: 5px;
+    background: rgba(13, 17, 23, 0.9);
+    font-size: 14px;
+    font-weight: bold;
+    z-index: 10;
+}
+
+.task-surface {
     position: absolute;
     top: 0;
-    left: 60px; /* 目盛りの右側に配置 */
-    right: 10px;
-    height: 100%;
+    width: 100%;
+    height: calc(var(--hour-height) * 24);
 }
 
+/* タスクカード */
 .task-card {
     position: absolute;
-    left: 0;
-    right: 0;
-    background-color: var(--task-bg);
-    border-left: 4px solid var(--accent-purple); /* 左端にアクセントカラー */
-    border-radius: 4px;
-    padding: 8px;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+    left: 5px;
+    right: 5px;
+    background: rgba(30, 41, 59, 0.7);
+    border-radius: 8px;
+    padding: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
     overflow: hidden;
-    display: flex;
-    flex-direction: column;
 }
 
-.task-title {
-    font-weight: bold;
-    font-size: 0.9rem;
-    display: flex;
-    justify-content: space-between;
-}
+.task-card.life { border-top: 3px solid var(--life-color); }
+.task-card.study { border-top: 3px solid var(--study-color); }
 
-.task-time-range {
-    font-size: 0.75rem;
-    color: var(--text-sub);
-}
-
-.task-cat {
-    font-size: 0.75rem;
-    color: var(--text-sub);
-    margin-top: 4px;
-}
+.task-card .task-name { font-weight: bold; font-size: 14px; margin-bottom: 5px; }
+.task-card .task-info { font-size: 11px; color: #8b949e; }
