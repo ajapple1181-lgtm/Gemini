@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Day Conductor</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- 入力エリア -->
+        <header>
+            <h1>Day Conductor</h1>
+            <form id="task-form">
+                <input type="text" id="task-name" placeholder="タスク名" required>
+                <input type="text" id="task-category" placeholder="カテゴリー">
+                <div class="time-inputs">
+                    <input type="time" id="start-time" required>
+                    <span>〜</span>
+                    <input type="time" id="end-time" required>
+                </div>
+                <button type="submit">追加</button>
+            </form>
+        </header>
+
+        <!-- タイムライン表示エリア -->
+        <main class="timeline-container">
+            <div class="date-label">2/21<br>土</div>
+            <div class="timeline-grid" id="timeline">
+                <!-- 時間の目盛り (JSで生成) -->
+                <div class="time-marks" id="time-marks"></div>
+                <!-- タスクの表示場所 -->
+                <div class="task-layer" id="task-layer"></div>
+            </div>
+        </main>
+    </div>
+    <script src="app.js"></script>
+</body>
+</html>
