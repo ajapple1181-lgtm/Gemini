@@ -1,0 +1,116 @@
+:root {
+    --bg-color: #0f172a;        /* 背景色（濃い紺） */
+    --timeline-bg: #1e293b;    /* タイムラインのベース */
+    --task-bg: #1e293b;        /* タスクの背景色（背景より少し明るい） */
+    --accent-purple: #8b5cf6;  /* 紫のアクセント */
+    --text-main: #f8fafc;
+    --text-sub: #94a3b8;
+    --border-color: #334155;
+    --hour-height: 100px;      /* 1時間の高さ */
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-main);
+    font-family: sans-serif;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+}
+
+.container {
+    width: 100%;
+    max-width: 600px;
+    padding: 20px;
+}
+
+/* 入力フォームのスタイル */
+#task-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 30px;
+    background: #1e293b;
+    padding: 15px;
+    border-radius: 8px;
+}
+
+input {
+    background: #0f172a;
+    border: 1px solid var(--border-color);
+    color: white;
+    padding: 8px;
+    border-radius: 4px;
+}
+
+/* タイムライン構造 */
+.timeline-container {
+    display: flex;
+    position: relative;
+    border-top: 1px solid var(--border-color);
+}
+
+.date-label {
+    width: 50px;
+    padding-top: 20px;
+    font-weight: bold;
+    text-align: center;
+    border-right: 1px solid var(--border-color);
+}
+
+.timeline-grid {
+    flex-grow: 1;
+    position: relative;
+    height: calc(var(--hour-height) * 24); /* 24時間分 */
+}
+
+/* 時間の目盛り */
+.time-mark {
+    height: var(--hour-height);
+    border-bottom: 1px solid #1e293b;
+    font-size: 0.8rem;
+    color: var(--text-sub);
+    padding-left: 10px;
+    box-sizing: border-box;
+}
+
+/* タスクの配置 */
+.task-layer {
+    position: absolute;
+    top: 0;
+    left: 60px; /* 目盛りの右側に配置 */
+    right: 10px;
+    height: 100%;
+}
+
+.task-card {
+    position: absolute;
+    left: 0;
+    right: 0;
+    background-color: var(--task-bg);
+    border-left: 4px solid var(--accent-purple); /* 左端にアクセントカラー */
+    border-radius: 4px;
+    padding: 8px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.task-title {
+    font-weight: bold;
+    font-size: 0.9rem;
+    display: flex;
+    justify-content: space-between;
+}
+
+.task-time-range {
+    font-size: 0.75rem;
+    color: var(--text-sub);
+}
+
+.task-cat {
+    font-size: 0.75rem;
+    color: var(--text-sub);
+    margin-top: 4px;
+}
