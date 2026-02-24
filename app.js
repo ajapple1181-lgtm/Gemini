@@ -481,10 +481,15 @@ function mkTimeInput(value, onChange, stepSec = 60, disabled = false) {
   i.step = String(stepSec);
   i.value = value || "";
   i.disabled = !!disabled;
-  i.addEventListener("input", () => onChange(i.value));
-  i.addEventListener("change", () => onChange(i.value));
+
+  // ★スマホ対策：input連発でrenderされると「変えられない」ので、確定(change)だけ拾う
+  const commit = () => onChange(i.value);
+
+  i.addEventListener("change", commit);
+  i.addEventListener("blur", commit); // 念のため
+
   return i;
-}
+     }
 function mkBtn(text, cls, onClick) {
   const b = el("button", `btn ${cls||""}`.trim(), text);
   b.type = "button";
@@ -1532,50 +1537,51 @@ function renderLife() {
   renderTimeArea();
 
   const btnAdd = mkBtn("追加", "btnPrimary", () => {
-    const lifeNow = state.lifeByDate[state.selectedDate] || emptyLifeSettings();
-    state.lifeByDate[state.selectedDate] = normalizeLifeSettings(lifeNow);
+  // ★ normalize後のオブジェクトを lifeNow として使う（古い参照を編集しない）
+  const lifeNow = state.lifeByDate[state.selectedDate] =
+    normalizeLifeSettings(state.lifeByDate[state.selectedDate] || emptyLifeSettings());
 
-    const type = typeSel.value || "-";
-    const content = (contentIn.value || "").trim();
+  const type = typeSel.value || "-";
+  const content = (contentIn.value || "").trim();
 
-    const newBlock = { id: uid(), type, content };
+  const newBlock = { id: uid(), type, content };
 
-    if (r1.checked) {
-      if (!startTime.value) return;
-      const mins = parseInt(minIn2.value || "0", 10);
-      if (!Number.isFinite(mins) || mins <= 0) return;
+  if (r1.checked) {
+    if (!startTime.value) return;
+    const mins = parseInt(minIn2.value || "0", 10);
+    if (!Number.isFinite(mins) || mins <= 0) return;
 
-      newBlock.mode = "minutes";
-      newBlock.start = startTime.value;
-      newBlock.minutes = mins;
-    } else {
-      if (!startTime.value || !endTime.value) return;
-      newBlock.mode = "clock";
-      newBlock.start = startTime.value;
-      newBlock.end = endTime.value;
-    }
+    newBlock.mode = "minutes";
+    newBlock.start = startTime.value;
+    newBlock.minutes = mins;
+  } else {
+    if (!startTime.value || !endTime.value) return;
+    newBlock.mode = "clock";
+    newBlock.start = startTime.value;
+    newBlock.end = endTime.value;
+  }
 
-    // try add + validate (その日単位)
-    lifeNow.customBlocks.push(newBlock);
-    const err = validateLifeBlocksOnDemand(state.selectedDate, lifeNow);
-    if (err) {
-      lifeNow.customBlocks = lifeNow.customBlocks.filter(x => x.id !== newBlock.id);
-      saveState();
-      showSimpleAlert("追加できません", err);
-      render();
-      return;
-    }
+  lifeNow.customBlocks.push(newBlock);
 
-    // reset
-    startTime.value = "";
-    endTime.value = "";
-    minIn2.value = "";
-    contentIn.value = "";
-    typeSel.value = "-";
-
+  const err = validateLifeBlocksOnDemand(state.selectedDate, lifeNow);
+  if (err) {
+    lifeNow.customBlocks = lifeNow.customBlocks.filter(x => x.id !== newBlock.id);
     saveState();
+    showSimpleAlert("追加できません", err);
     render();
-  });
+    return;
+  }
+
+  // reset
+  startTime.value = "";
+  endTime.value = "";
+  minIn2.value = "";
+  contentIn.value = "";
+  typeSel.value = "-";
+
+  saveState();
+  render();
+});
 
   const btnClearCustom = mkBtn("追加した生活ブロックを全消去", "btnDanger", () => {
     const lifeNow = state.lifeByDate[state.selectedDate];
