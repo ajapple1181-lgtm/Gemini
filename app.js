@@ -218,15 +218,28 @@ function emptyLifeSettings() {
 
 function normalizeLifeSettings(life) {
   const base = emptyLifeSettings();
-  const src = life || {};
-  const out = { ...base, ...src };
-  if (!Array.isArray(out.customBlocks)) out.customBlocks = [];
 
-  // mins: empty -> default
-  out.breakfastMin = clamp(parseInt(out.breakfastMin || 30, 10), 1, 240);
-  out.lunchMin = clamp(parseInt(out.lunchMin || 30, 10), 1, 240);
-  out.dinnerMin = clamp(parseInt(out.dinnerMin || 30, 10), 1, 240);
-  return out;
+  // lifeが無いなら新規（ここだけ新規）
+  if (!life || typeof life !== "object") return deepClone(base);
+
+  // ★ ここから「in-place正規化」：life本人を整える（新しいオブジェクトを作らない）
+  for (const [k, v] of Object.entries(base)) {
+    if (!(k in life) || life[k] === undefined) life[k] = v;
+  }
+
+  if (!Array.isArray(life.customBlocks)) life.customBlocks = [];
+
+  const toInt = (val, def, lo, hi) => {
+    const n = parseInt(val, 10);
+    return clamp(Number.isFinite(n) ? n : def, lo, hi);
+  };
+
+  // 食事の分は常に 1〜240 に整える（空なら30）
+  life.breakfastMin = toInt(life.breakfastMin ?? 30, 30, 1, 240);
+  life.lunchMin = toInt(life.lunchMin ?? 30, 30, 1, 240);
+  life.dinnerMin = toInt(life.dinnerMin ?? 30, 30, 1, 240);
+
+  return life; // ★同じ参照を返す
 }
 
 function templateMonWedFri() {
@@ -1126,7 +1139,6 @@ function buildAllBlocksForWindow() {
     if (!life0) continue;
 
     const life = normalizeLifeSettings(life0);
-    state.lifeByDate[dateS] = life;
 
     const baseLife = buildLifeBlocksForDate(dateS, life);
     const endPart = buildEndOfDayBlocks(dateS, life, baseLife);
